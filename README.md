@@ -87,6 +87,12 @@ APFS local snapshots are an **undo buffer, not a backup**:
 - **Disk pressure purges them early.** If the disk fills up, macOS deletes
   local snapshots to make room.
 
+Silent failure is the other risk: launchd agents don't complain when they
+stop working. If you run Grafana Alloy against a Prometheus/Loki stack, see
+[observability/](observability/) for a heartbeat pipeline and alert rules
+that page you when snapshots stop — gated on the laptop actually being
+online, so travel and sleep don't false-alarm.
+
 So keep a real, off-device backup for anything that matters beyond a day —
 restic/kopia/Arq to a NAS or cloud, or rsync to a ZFS box that snapshots
 server-side. This tool covers the gap those don't: the five minutes between

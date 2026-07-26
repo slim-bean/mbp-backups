@@ -1,0 +1,50 @@
+{
+  "title": "MBP backups: snapshots stopped while laptop online",
+  "ruleGroup": "mbp-backups",
+  "folderUID": "<your-folder-uid>",
+  "condition": "C",
+  "for": "15m",
+  "noDataState": "OK",
+  "execErrState": "OK",
+  "data": [
+    {
+      "refId": "A",
+      "relativeTimeRange": { "from": 7200, "to": 0 },
+      "datasourceUid": "<your-loki-datasource-uid>",
+      "model": {
+        "refId": "A",
+        "queryType": "instant",
+        "expr": "sum(count_over_time({job=\"mbp-backups\", instance=\"<hostname>\"} |= ` OK ` [2h])) or vector(0)"
+      }
+    },
+    {
+      "refId": "B",
+      "relativeTimeRange": { "from": 600, "to": 0 },
+      "datasourceUid": "<your-prometheus-datasource-uid>",
+      "model": {
+        "refId": "B",
+        "instant": true,
+        "range": false,
+        "expr": "count(alloy_build_info{collector_id=\"<your-collector>\"}) or vector(0)"
+      }
+    },
+    {
+      "refId": "C",
+      "relativeTimeRange": { "from": 0, "to": 0 },
+      "datasourceUid": "__expr__",
+      "model": {
+        "refId": "C",
+        "type": "math",
+        "datasource": { "type": "__expr__", "uid": "__expr__" },
+        "expression": "($A < 1) && ($B > 0)"
+      }
+    }
+  ],
+  "annotations": {
+    "summary": "APFS snapshots have stopped on the MacBook Pro even though the laptop is online.",
+    "description": "No 'OK' lines from ~/Library/Logs/mbp-backups/snapshots.log in the last 2h while Alloy self-metrics (collector <your-collector>) show the machine is up. The launchd agent com.mbp-backups.snapshot is probably unloaded or tmutil is failing. Check: launchctl print gui/$(id -u)/com.mbp-backups.snapshot and the snapshots.log."
+  },
+  "labels": {
+    "service": "mbp-backups"
+  }
+}

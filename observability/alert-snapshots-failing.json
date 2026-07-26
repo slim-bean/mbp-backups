@@ -1,0 +1,39 @@
+{
+  "title": "MBP backups: tmutil snapshot failures",
+  "ruleGroup": "mbp-backups",
+  "folderUID": "<your-folder-uid>",
+  "condition": "B",
+  "for": "0s",
+  "noDataState": "OK",
+  "execErrState": "OK",
+  "data": [
+    {
+      "refId": "A",
+      "relativeTimeRange": { "from": 3600, "to": 0 },
+      "datasourceUid": "<your-loki-datasource-uid>",
+      "model": {
+        "refId": "A",
+        "queryType": "instant",
+        "expr": "sum(count_over_time({job=\"mbp-backups\", instance=\"<hostname>\"} |= ` FAIL ` [1h])) or vector(0)"
+      }
+    },
+    {
+      "refId": "B",
+      "relativeTimeRange": { "from": 0, "to": 0 },
+      "datasourceUid": "__expr__",
+      "model": {
+        "refId": "B",
+        "type": "math",
+        "datasource": { "type": "__expr__", "uid": "__expr__" },
+        "expression": "$A > 0"
+      }
+    }
+  ],
+  "annotations": {
+    "summary": "tmutil localsnapshot is failing on the MacBook Pro.",
+    "description": "FAIL lines seen in ~/Library/Logs/mbp-backups/snapshots.log within the last hour. The launchd agent is running but snapshots are erroring — check the log for the tmutil error message."
+  },
+  "labels": {
+    "service": "mbp-backups"
+  }
+}

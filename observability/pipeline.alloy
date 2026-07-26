@@ -1,0 +1,22 @@
+// Ship the mbp-backups snapshot heartbeat log to Loki.
+// Replace <you> with your username, and the loki.write endpoint/credentials
+// with your own (or forward to an existing loki.write component).
+local.file_match "mbp_backups" {
+	path_targets = [{"__path__" = "/Users/<you>/Library/Logs/mbp-backups/snapshots.log", "job" = "mbp-backups", "instance" = constants.hostname}]
+}
+
+loki.source.file "mbp_backups" {
+	targets    = local.file_match.mbp_backups.targets
+	forward_to = [loki.write.grafana_cloud_loki.receiver]
+}
+
+loki.write "grafana_cloud_loki" {
+	endpoint {
+		url = "https://<your-loki-endpoint>/loki/api/v1/push"
+
+		basic_auth {
+			username = "<your-loki-instance-id>"
+			password = sys.env("GCLOUD_RW_API_KEY")
+		}
+	}
+}
