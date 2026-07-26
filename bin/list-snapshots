@@ -1,0 +1,5 @@
+#!/bin/bash
+# List the APFS local snapshots currently available on the boot volume.
+set -euo pipefail
+
+tmutil listlocalsnapshots /

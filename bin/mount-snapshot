@@ -1,0 +1,28 @@
+#!/bin/bash
+# Mount an APFS local snapshot read-only so you can copy files out of it.
+#
+# Usage:
+#   mount-snapshot                  # mount the most recent snapshot
+#   mount-snapshot <snapshot-name>  # mount a specific one (see list-snapshots)
+#
+# Mounting requires sudo. Your files appear under <mountpoint>/Users/<you>/...
+set -euo pipefail
+
+snap="${1:-$(tmutil listlocalsnapshots / | grep '^com\.' | tail -n 1)}"
+if [[ -z "$snap" ]]; then
+  echo "No local snapshots found. Run take-snapshot first." >&2
+  exit 1
+fi
+
+mnt="${TMPDIR:-/tmp}/mbp-backups-snapshot"
+mkdir -p "$mnt"
+
+sudo mount_apfs -s "$snap" /System/Volumes/Data "$mnt"
+
+echo "Mounted $snap (read-only) at:"
+echo "  $mnt"
+echo
+echo "Your home directory as of that snapshot:"
+echo "  $mnt/Users/$USER"
+echo
+echo "When you're done:  sudo umount '$mnt'"
