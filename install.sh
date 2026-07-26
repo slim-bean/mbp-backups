@@ -14,7 +14,7 @@ INTERVAL="${SNAPSHOT_INTERVAL_SECONDS:-1200}"
 LABEL="com.mbp-backups.snapshot"
 PLIST="$HOME/Library/LaunchAgents/$LABEL.plist"
 
-chmod +x "$REPO_DIR/bin/"* "$REPO_DIR/hooks/"*.sh
+chmod +x "$REPO_DIR/bin/"*
 
 mkdir -p "$HOME/Library/LaunchAgents" "$HOME/Library/Logs/mbp-backups"
 

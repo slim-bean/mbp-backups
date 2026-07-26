@@ -25,8 +25,7 @@ copy-on-write snapshots Time Machine uses (`tmutil localsnapshot`). They are:
   change after it was taken.
 
 This repo installs a launchd agent that snapshots every 20 minutes
-(configurable), plus an optional [Claude Code hook](#claude-code-hook) that
-snapshots right before the agent runs shell commands.
+(configurable).
 
 ## Install
 
@@ -71,32 +70,8 @@ damage it can do is to the Data volume, which is exactly what these
 snapshots cover. Worst case, "Reinstall macOS" from Recovery rebuilds the
 system without touching your data.
 
-## Claude Code hook
-
-For a restore point taken seconds before an agent touches your shell, add a
-`PreToolUse` hook to `~/.claude/settings.json`:
-
-```json
-{
-  "hooks": {
-    "PreToolUse": [
-      {
-        "matcher": "Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "$HOME/projects/mbp-backups/hooks/claude-code-snapshot-hook.sh"
-          }
-        ]
-      }
-    ]
-  }
-}
-```
-
-The hook is debounced (default: at most one snapshot per 5 minutes) so busy
-sessions don't churn, and it never blocks the agent even if `tmutil` fails.
-Other agents/CLIs: wrap them in a shell function that runs
+Want a restore point taken right before an agent session instead of (or on
+top of) the schedule? Wrap your agent in a shell function that runs
 `bin/take-snapshot` first.
 
 ## Limitations — read this part
