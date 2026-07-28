@@ -17,7 +17,25 @@ fi
 mnt="${TMPDIR:-/tmp}/mbp-backups-snapshot"
 mkdir -p "$mnt"
 
-sudo mount_apfs -s "$snap" /System/Volumes/Data "$mnt"
+if ! err=$(sudo mount_apfs -s "$snap" /System/Volumes/Data "$mnt" 2>&1); then
+  echo "$err" >&2
+  if [[ "$err" == *"not permitted"* ]]; then
+    cat >&2 <<'EOF'
+
+Mounting Time Machine snapshots is gated by macOS privacy protection (TCC),
+and sudo does not bypass it — your *terminal app* needs Full Disk Access:
+
+  System Settings -> Privacy & Security -> Full Disk Access
+  -> enable it for the terminal you're running this from
+  (Terminal, iTerm2, VS Code, etc.), then restart that app.
+
+No Full Disk Access? Recover through the native UI instead: Finder ->
+Time Machine menu bar icon -> "Browse Time Machine Backups" browses these
+same snapshots without any special permissions.
+EOF
+  fi
+  exit 1
+fi
 
 echo "Mounted $snap (read-only) at:"
 echo "  $mnt"

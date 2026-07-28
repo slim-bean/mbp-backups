@@ -52,6 +52,13 @@ Remove it with `./uninstall.sh`.
    recent); copy your files back out from
    `$TMPDIR/mbp-backups-snapshot/Users/<you>/...`.
 
+   Note: mounting snapshots requires your terminal app to have **Full Disk
+   Access** (System Settings → Privacy & Security → Full Disk Access) —
+   macOS TCC gates snapshot mounts and `sudo` does not bypass it. Without
+   it you'll get `mount_apfs: volume could not be mounted: Operation not
+   permitted`. The Time Machine browser UI works without any special
+   permissions.
+
 Or just open Time Machine (menu bar → "Browse Time Machine Backups") and
 step back — these snapshots appear there natively.
 
