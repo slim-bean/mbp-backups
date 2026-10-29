@@ -105,6 +105,12 @@ restic/kopia/Arq to a NAS or cloud, or rsync to a ZFS box that snapshots
 server-side. This tool covers the gap those don't: the five minutes between
 "agent started" and "agent deleted the wrong thing."
 
+## Development
+
+Run logger regression tests with `python3 -m unittest discover -s tests -v`.
+They use a temporary home directory and mock `tmutil`; no real snapshots
+are created.
+
 ## License
 
 Apache 2.0 — see [LICENSE](LICENSE).

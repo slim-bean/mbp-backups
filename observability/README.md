@@ -7,7 +7,14 @@ is asleep or traveling.
 
 `take-snapshot` already writes a heartbeat log,
 `~/Library/Logs/mbp-backups/snapshots.log`, with one `OK` or `FAIL` line per
-snapshot attempt. The setup here is:
+snapshot attempt. The log is append-only between rotations: before an attempt,
+if it has reached 1 MiB, it is renamed to `snapshots.log.1` (replacing the
+previous archive). Alloy can finish reading the old file and follow the new
+`snapshots.log`; keep the file target exact, not a glob including archives,
+to avoid replaying old heartbeats. Do not rewrite the active log each run:
+that causes old entries to be ingested again with fresh timestamps.
+
+The setup here is:
 
 1. **Tail that log into Loki** ([pipeline.alloy](pipeline.alloy)). If you use
    Fleet Management, add it as a pipeline scoped to your laptop's collector
